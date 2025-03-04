@@ -6,7 +6,7 @@
 /*   By: yafahfou <yafahfou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 17:49:10 by yafahfou          #+#    #+#             */
-/*   Updated: 2025/03/04 16:15:58 by yafahfou         ###   ########.fr       */
+/*   Updated: 2025/03/04 16:19:52 by yafahfou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ void	parse_map(char *av, t_map *map)
 		split = ft_split(gnl, ' ');
 		while (++j < count_word(gnl, ' '))
 		{
-			map->values[i][j].x = i;
-			map->values[i][j].y = j;
+			map->values[i][j].x = j;
+			map->values[i][j].y = i;
 			map->values[i][j].z = ft_atoi(split[j]);
 		}
 		free(gnl);
@@ -87,7 +87,7 @@ void	my_mlx_pixel_put(t_mlx *data, t_point3D *a, int color)
 
 	if (a->x < 0 || a->x  >= WIN_WIDTH || a->y < 0 || a->y >= WIN_HEIGHT)
 		return ;
-	dst = data->addr + (a->x * data->line_len + a->y * (data->bpp / 8));
+	dst = data->addr + (a->y * data->line_len + a->x * (data->bpp / 8));
 	*(unsigned int*)dst = color;
 }
 

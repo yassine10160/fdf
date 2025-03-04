@@ -6,7 +6,7 @@
 /*   By: yafahfou <yafahfou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 18:08:49 by yafahfou          #+#    #+#             */
-/*   Updated: 2025/03/04 16:13:00 by yafahfou         ###   ########.fr       */
+/*   Updated: 2025/03/04 16:53:30 by yafahfou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ void slope_less_than_one(t_mlx *fdf, t_point3D *d, t_map *map)
 	while (++i < absolut(d->x))
 	{
 		if (d->x > 0)
-		point.x++;
+			point.x++;
 		else
-		point.x--;
+			point.x--;
 		if (p < 0)
-		p = p + 2 * absolut(d->y);
+			p = p + 2 * absolut(d->y);
 		else
 		{
 			if (d->y > 0)
@@ -38,7 +38,7 @@ void slope_less_than_one(t_mlx *fdf, t_point3D *d, t_map *map)
 			point.y--;
 			p = p + 2 * absolut(d->y) - 2 * absolut(d->x);
 		}
-		printf("pos p.x = %d\n, pos p.y: %d\n", point.x, point.y);
+		// printf("pos p.x = %d\n, pos p.y: %d\n", point.x, point.y);
 		// isometric(&point);
 		my_mlx_pixel_put(fdf, &point, 0x00FF0000);
 	}
@@ -110,8 +110,8 @@ void	set_map(t_map *map, int row, int col)
 	// map->b.y *= 20;
 	// map->b.z *= 50;
 	// map->a.z *= 50;
-	map->values[row][col].x += (WIN_HEIGHT / 2) - (map->nb_lines * STEP) / 2;
-	map->values[row][col].y += (WIN_WIDTH / 2) - (map->nb_cols * STEP) / 2;
+	map->values[row][col].y += (WIN_HEIGHT / 2) - (map->nb_lines * STEP) / 2;
+	map->values[row][col].x += (WIN_WIDTH / 2) - (map->nb_cols * STEP) / 2;
 	// map->values[row]
 	// map->values[row][col].y += WIN_HEIGHT / 8;
 	// map->a.y += WIN_HEIGHT / 300;
@@ -134,10 +134,12 @@ void	isometric(t_point3D *p)
 {
 	t_point3D tmp;
 
-	tmp.x = p->x - 260;
-	tmp.y = p->y + 100;
+	tmp.x = p->x - WIN_WIDTH / 2;
+	tmp.y = p->y - WIN_HEIGHT / 2;
 	p->x = (1/sqrt(2) * tmp.x) + (1/sqrt(2) * tmp.y);
-	p->y = -(1/sqrt(6) * tmp.x) + (1 / sqrt(6) * tmp.y) - (2 / sqrt(6) * p->z);
+	p->y = -(1/sqrt(6) * tmp.x) + (1 / sqrt(6) * tmp.y) - (2 / sqrt(6) * p->z * 5);
+	p->x += WIN_WIDTH / 2;
+	p->y += WIN_HEIGHT / 2;
 }
 
 // void	get_center_map(t_map *map)
@@ -161,7 +163,7 @@ void	prepare_map(t_map *map)
 		while (j < map->nb_cols)
 		{
 			set_map(map, i, j);
-			// isometric(&map->values[i][j]);
+			isometric(&map->values[i][j]);
 			j++;
 		}
 		i++;
@@ -196,6 +198,6 @@ void	draw_map(t_map *map, t_mlx *fdf)
 		}
 		x++;
 	}
-	printf("map:posx %d, posy: %d\n", map->posx, map->posy);
+	// printf("map:posx %d, posy: %d\n", map->posx, map->posy);
 	mlx_put_image_to_window(fdf->mlx, fdf->window, fdf->image, 0, 0);
 }
