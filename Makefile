@@ -1,9 +1,9 @@
 CC = cc
-CFLAGS = -Wextra -Werror -Wall
+CFLAGS = -Wextra -Werror -Wall -g
 MLXFLAGS = -lX11 -lXext -lm -lGL -lz
 LIBFT_A = src/libft/libft.a
 MLX = minilibx-linux/libmlx.a
-SRCS =	src/parsing.c
+SRCS =	src/parsing.c src/utils.c src/bresenham.c src/main.c
 OBJS =	$(SRCS:.c=.o)
 NAME =	fdf
 
