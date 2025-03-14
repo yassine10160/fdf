@@ -6,7 +6,7 @@
 /*   By: yafahfou <yafahfou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 17:49:10 by yafahfou          #+#    #+#             */
-/*   Updated: 2025/03/04 16:19:52 by yafahfou         ###   ########.fr       */
+/*   Updated: 2025/03/13 15:46:33 by yafahfou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,33 +38,32 @@ int	get_height(char *av)
 	return (lines);
 }
 
-void	open_check(int fd)
-{
-	if (fd == -1)
-	{
-		write(2, "open error\n", 11);
-		exit(EXIT_FAILURE);
-	}
-}
-
 // ne pas oublier de securiser les mallocs !!!!
 void	parse_map(char *av, t_map *map)
 {
-	int		i;
-	int		j;
-	char	**split;
-	char	*gnl;
 	int		fd;
 
 	map->nb_lines = get_height(av);
 	fd = open(av, O_RDONLY);
 	open_check(fd);
 	map->values = malloc(map->nb_lines *sizeof(t_point3D *));
-	i = 0;
-	while (i < map->nb_lines)
+	alloc_check(map->values);
+	set_parse_map(map, fd);
+}
+
+void	set_parse_map(t_map *map, int fd)
+{
+	int	i;
+	char	**split;
+	char	*gnl;
+	int		j;
+
+	i = -1;
+	while (++i < map->nb_lines)
 	{
 		gnl = get_next_line(fd);
 		map->values[i] = malloc(count_word(gnl, ' ') * sizeof(t_point3D));
+		alloc_check(map->values[i]);
 		map->nb_cols = count_word(gnl, ' ');
 		j = -1;
 		split = ft_split(gnl, ' ');
@@ -76,9 +75,33 @@ void	parse_map(char *av, t_map *map)
 		}
 		free(gnl);
 		free_tab_str(split, i);
-		i++;
 	}
 	close(fd);
+}
+
+void	stock_map(t_map	*map)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	map->og_values = malloc(map->nb_lines * sizeof(t_point3D *));
+	alloc_check(map->values);
+	while (i < map->nb_lines)
+	{
+		j = 0;
+		map->og_values[i] = malloc((map->nb_cols) * sizeof(t_point3D));
+		// printf("je suis la\n");
+		alloc_check(map->og_values[i]);
+		while (j < map->nb_cols)
+		{
+			map->og_values[i][j].x = j;
+			map->og_values[i][j].y = i;
+			map->og_values[i][j].z = map->values[i][j].z;
+			j++;
+		}
+		i++;
+	}
 }
 
 void	my_mlx_pixel_put(t_mlx *data, t_point3D *a, int color)
@@ -90,7 +113,3 @@ void	my_mlx_pixel_put(t_mlx *data, t_point3D *a, int color)
 	dst = data->addr + (a->y * data->line_len + a->x * (data->bpp / 8));
 	*(unsigned int*)dst = color;
 }
-
-// recuperer longueur et largeur de la map
-
-// restructurer la fct main , stocker les valeurs dans ma struct et essayer d'afficher une ligne avec la mlx
