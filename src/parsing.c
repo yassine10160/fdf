@@ -6,15 +6,15 @@
 /*   By: yafahfou <yafahfou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 17:49:10 by yafahfou          #+#    #+#             */
-/*   Updated: 2025/03/13 15:46:33 by yafahfou         ###   ########.fr       */
+/*   Updated: 2025/03/20 13:45:33 by yafahfou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fdf.h"
-// erreur makefile pour les .o !!!!!!!!
-int	get_height(char *av)
+
+int	get_height(char *av, t_map *map)
 {
-	int 	lines;
+	int		lines;
 	char	*gnl;
 	int		fd;
 
@@ -22,13 +22,14 @@ int	get_height(char *av)
 	if (fd == -1)
 		exit(EXIT_FAILURE);
 	gnl = get_next_line(fd);
+	map->nb_cols = calc_nb_words(gnl, " ");
 	if (!gnl)
 	{
 		write(2, "Error: empty map\n", 17);
 		exit(EXIT_FAILURE);
 	}
 	lines = 0;
-	while(gnl)
+	while (gnl)
 	{
 		lines++;
 		free(gnl);
@@ -38,61 +39,82 @@ int	get_height(char *av)
 	return (lines);
 }
 
-// ne pas oublier de securiser les mallocs !!!!
 void	parse_map(char *av, t_map *map)
 {
 	int		fd;
 
-	map->nb_lines = get_height(av);
+	map->nb_lines = get_height(av, map);
 	fd = open(av, O_RDONLY);
 	open_check(fd);
-	map->values = malloc(map->nb_lines *sizeof(t_point3D *));
-	alloc_check(map->values);
+	map->values = malloc(map->nb_lines * sizeof(t_point3D *));
+	alloc_check(map->values, map);
 	set_parse_map(map, fd);
+	close(fd);
+}
+
+void	check_col_nb(t_map *map, int col, char *gnl, int fd)
+{
+	if (col != map->nb_cols)
+	{
+		if (gnl)
+			free(gnl);
+		write(2, "Invalid map\n", 12);
+		free_map(map, ONLY_VALUES);
+		close(fd);
+		exit(1);
+	}
+	else if (!gnl)
+	{
+		free_map(map, ONLY_VALUES);
+		close(fd);
+		exit(1);
+	}
+	map->nb_cols = col;
+	return ;
 }
 
 void	set_parse_map(t_map *map, int fd)
 {
-	int	i;
+	int		i;
 	char	**split;
 	char	*gnl;
 	int		j;
+	int		nb_words;
 
 	i = -1;
 	while (++i < map->nb_lines)
 	{
 		gnl = get_next_line(fd);
-		map->values[i] = malloc(count_word(gnl, ' ') * sizeof(t_point3D));
-		alloc_check(map->values[i]);
-		map->nb_cols = count_word(gnl, ' ');
+		nb_words = calc_nb_words(gnl, " ");
+		map->values[i] = malloc(nb_words * sizeof(t_point3D));
+		alloc_check(map->values[i], map);
+		check_col_nb(map, nb_words, gnl, fd);
 		j = -1;
-		split = ft_split(gnl, ' ');
-		while (++j < count_word(gnl, ' '))
+		split = ft_split(gnl, " ");
+		alloc_check(split, map);
+		while (++j < nb_words)
 		{
 			map->values[i][j].x = j;
 			map->values[i][j].y = i;
 			map->values[i][j].z = ft_atoi(split[j]);
 		}
-		free(gnl);
-		free_tab_str(split, i);
+		free_tab_str(split, j, gnl);
 	}
-	close(fd);
 }
 
-void	stock_map(t_map	*map)
+void	stock_og_values(t_map	*map)
 {
 	int	i;
 	int	j;
 
 	i = 0;
 	map->og_values = malloc(map->nb_lines * sizeof(t_point3D *));
-	alloc_check(map->values);
+	alloc_check(map->values, map);
 	while (i < map->nb_lines)
 	{
 		j = 0;
 		map->og_values[i] = malloc((map->nb_cols) * sizeof(t_point3D));
-		// printf("je suis la\n");
-		alloc_check(map->og_values[i]);
+		alloc_check(map->og_values[i], map);
 		while (j < map->nb_cols)
 		{
 			map->og_values[i][j].x = j;
@@ -102,14 +124,4 @@ void	stock_map(t_map	*map)
 		}
 		i++;
 	}
-}
-
-void	my_mlx_pixel_put(t_mlx *data, t_point3D *a, int color)
-{
-	char	*dst;
-
-	if (a->x < 0 || a->x  >= WIN_WIDTH || a->y < 0 || a->y >= WIN_HEIGHT)
-		return ;
-	dst = data->addr + (a->y * data->line_len + a->x * (data->bpp / 8));
-	*(unsigned int*)dst = color;
 }

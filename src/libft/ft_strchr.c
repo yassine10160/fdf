@@ -6,7 +6,7 @@
 /*   By: yafahfou <yafahfou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 18:20:53 by yassine           #+#    #+#             */
-/*   Updated: 2024/11/13 15:53:13 by yafahfou         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:46:31 by yafahfou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,16 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-// #include <stdio.h>
-// #include <string.h>
+int	pos_in_str(char *str, char c)
+{
+	int	i;
 
-// int	main()
-// {
-// 	char	buff1[20] = "hello world";
-// 	printf("%s\n", strchr(buff1, '\0'));
-// 	printf("%s", ft_strchr(buff1, '\0'));
-// }
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == c)
+			return (i);
+		i++;
+	}
+	return (-1);
+}

@@ -4,14 +4,14 @@ MLXFLAGS = -lX11 -lXext -lm -lGL -lz
 LIBFT_A = src/libft/libft.a
 MLX = minilibx-linux/libmlx.a
 OBJDIR = .obj
-SRCS =	parsing.c utils.c bresenham.c main.c lib_utils.c
+SRCS =	parsing.c utils.c bresenham.c main.c lib_utils.c draw_map.c
 OBJS =	$(addprefix $(OBJDIR)/,$(SRCS:.c=.o))
 NAME =	fdf
 
 all: $(NAME)
 
 
-$(OBJDIR)/%.o: src/%.c src/libft/libft.h minilibx-linux/mlx.h | $(OBJDIR)
+$(OBJDIR)/%.o: src/%.c src/libft/libft.h minilibx-linux/mlx.h includes/fdf.h | $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJS) Makefile $(LIBFT_A) $(MLX)

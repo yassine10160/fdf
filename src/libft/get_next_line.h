@@ -6,7 +6,7 @@
 /*   By: yafahfou <yafahfou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:55:48 by yafahfou          #+#    #+#             */
-/*   Updated: 2025/02/13 14:38:37 by yafahfou         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:46:54 by yafahfou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <stddef.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 15
+#  define BUFFER_SIZE 10000
 # endif
 
 char	*get_next_line(int fd);
